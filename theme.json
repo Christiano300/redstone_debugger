@@ -37,8 +37,8 @@
         "SDN": {"type": "longop", "arg": "none"},
         "MUL": {"type": "longop", "arg": "none"},
 
-        "RW": {"type": "ramop", "arg": "ramslot"},
-        "RR": {"type": "ramop", "arg": "ramslot"},
+        "RW": {"type": "ramop", "arg": "none"},
+        "RR": {"type": "ramop", "arg": "none"},
         "RC": {"type": "ramcheck", "arg": "none"},
 
         "JMP": {"type": "jump", "arg": "address"},

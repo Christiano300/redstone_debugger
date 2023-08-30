@@ -16,7 +16,10 @@ class Command:
         parts = init_string.split()
         self.name = parts[0]
         if len(parts) > 1:
-            self.arg = int(parts[1])
+            if parts[1].isdecimal():
+                self.arg = int(parts[1])
+            else:
+                self.arg = 0
         else:
             self.arg = None
 
@@ -35,7 +38,7 @@ class State:
     cache_slots: Sequence[np.int16] = np.zeros(32, np.int16)
     ram: Sequence[np.int16] = np.zeros(1024, np.int16)
     loaded_bank: Sequence[np.int16] = np.zeros(16, np.int16)
-    loaded_bank_index: int = -1
+    loaded_bank_index: int = 0
     running: bool = True
     
     @property
@@ -107,11 +110,15 @@ class Computer:
                 self.state.a *= self.state.b
 
             case "RW":
-                pass
+                self.state.loaded_bank[self.state.b % 16] = self.state.a
             case "RR":
-                pass
+                self.state.a = self.state.loaded_bank[self.state.b % 16]
             case "RC":
-                pass
+                if self.state.b != self.state.loaded_bank_index:
+                    bank = self.state.b // 16
+                    self.state.loaded_bank_index = bank
+                    self.state.ram[self.state.loaded_bank_index*16:(self.state.loaded_bank_index+1)*16] = self.state.loaded_bank
+                    self.state.loaded_bank = self.state.ram[bank*16:(bank+1)*16]
 
             case "JMP":
                 self.state.instruction_pointer = command.arg
