@@ -1,0 +1,59 @@
+{
+    "colors": {
+        "load": "0xbdd7fc",
+        "save": "0x6192ff",
+        "op": "0xef91ef",
+        "longop": "0xbe85ff",
+        "ramop": "0xffa500",
+        "ramcheck": "0xe86b3e",
+        "jump": "0xa7dd6b",
+        "discjump": "0x4fb14f",
+        "stop": "0xa6a6a6",
+        "number": "0xe19855",
+        "cacheslot": "0xafebcd",
+        "ramslot": "0xe5c07b",
+        "address": "0x45cdd7",
+        "none": "0xf0f0f0",
+        "unknown": "0xff7676"
+    },
+    "commands": {
+        "NON": {"type": "stop", "arg": "none"},
+        "LA": {"type": "load", "arg": "cacheslot"},
+        "LB": {"type": "load", "arg": "cacheslot"},
+        "LAL": {"type": "load", "arg": "number"},
+        "LAH": {"type": "load", "arg": "number"},
+        "LBL": {"type": "load", "arg": "number"},
+        "LBH": {"type": "load", "arg": "number"},
+        "SVA": {"type": "save", "arg": "cacheslot"},
+        
+        "STP": {"type": "stop", "arg": "none"},
+
+        "ADD": {"type": "op", "arg": "none"},
+        "SUB": {"type": "op", "arg": "none"},
+        "AND": {"type": "op", "arg": "none"},
+        "OR": {"type": "op", "arg": "none"},
+        "XOR": {"type": "op", "arg": "none"},
+        "SUP": {"type": "longop", "arg": "none"},
+        "SDN": {"type": "longop", "arg": "none"},
+        "MUL": {"type": "longop", "arg": "none"},
+
+        "RW": {"type": "ramop", "arg": "ramslot"},
+        "RR": {"type": "ramop", "arg": "ramslot"},
+        "RC": {"type": "ramcheck", "arg": "none"},
+
+        "JMP": {"type": "jump", "arg": "address"},
+        "JE": {"type": "jump", "arg": "address"},
+        "JNE": {"type": "jump", "arg": "address"},
+        "JG": {"type": "jump", "arg": "address"},
+        "JGE": {"type": "jump", "arg": "address"},
+        "JL": {"type": "jump", "arg": "address"},
+        "JLE": {"type": "jump", "arg": "address"},
+        "JMD": {"type": "discjump", "arg": "address"},
+        "JDE": {"type": "discjump", "arg": "address"},
+        "JDN": {"type": "discjump", "arg": "address"},
+        "JDG": {"type": "discjump", "arg": "address"},
+        "JDGE": {"type": "discjump", "arg": "address"},
+        "JDL": {"type": "discjump", "arg": "address"},
+        "JDLE": {"type": "discjump", "arg": "address"}
+    }
+}
