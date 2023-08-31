@@ -114,11 +114,11 @@ class Computer:
             case "RR":
                 self.state.a = self.state.loaded_bank[self.state.b % 16]
             case "RC":
-                if self.state.b != self.state.loaded_bank_index:
-                    bank = self.state.b // 16
-                    self.state.loaded_bank_index = bank
+                bank = (self.state.b // 16) % 64
+                if bank != self.state.loaded_bank_index:
                     self.state.ram[self.state.loaded_bank_index*16:(self.state.loaded_bank_index+1)*16] = self.state.loaded_bank
                     self.state.loaded_bank = self.state.ram[bank*16:(bank+1)*16]
+                    self.state.loaded_bank_index = bank
 
             case "JMP":
                 self.state.instruction_pointer = command.arg

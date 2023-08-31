@@ -30,7 +30,7 @@ with open("code.txt") as f:
     computer = Computer(f.read())
 
 auto_running = False
-commands_per_second = 25
+commands_per_second = 60
 auto_max_cooldown = FPS / commands_per_second
 auto_cooldown = auto_max_cooldown
 
@@ -179,6 +179,7 @@ def draw_output():
                       col_width + pad * 2, line_height * 9 + pad),
                      2, 2)
 
+
 def draw_ram():
     col_width = font_code_bold.size("-32762")[0] + 10
     row_height = font_code_bold.size("-32762")[1]
@@ -188,7 +189,8 @@ def draw_ram():
     pad = 2
     linenumpad = font_code_bold.size("63")[0] + 6
 
-    text(f"Loaded Bank: {computer.state.loaded_bank_index}", (hofs, vofs - row_height), 0xffffffff, True)
+    text(f"Loaded Bank: {computer.state.loaded_bank_index}",
+         (hofs, vofs - row_height), 0xffffffff, True)
 
     for i in range(16):
         text(str(i),
@@ -240,8 +242,10 @@ while True:
 
                 elif event.key == pygame.K_UP:
                     if pygame.key.get_mods() & pygame.KMOD_ALT and selected_command_idx > 0:
-                        computer.state.program_data[selected_command_idx], computer.state.program_data[selected_command_idx -
-                                                                                                       1] = computer.state.program_data[selected_command_idx - 1], computer.state.program_data[selected_command_idx]
+                        computer.state.program_data[selected_command_idx], \
+                            computer.state.program_data[selected_command_idx - 1] = \
+                        computer.state.program_data[selected_command_idx - 1], \
+                            computer.state.program_data[selected_command_idx]
                         selected_command_idx -= 1
                     else:
                         selected_command_idx = max(selected_command_idx - 1, 0)
@@ -257,7 +261,8 @@ while True:
                 elif event.key == pygame.K_BACKSPACE:
                     if pygame.key.get_mods() & pygame.KMOD_CTRL:
                         selected_command = ""
-                    elif selected_command == "" and len(computer.state.program_data) > 1:  # delete line
+                    # delete line
+                    elif selected_command == "" and len(computer.state.program_data) > 1:
                         del computer.state.program_data[selected_command_idx]
                         selected_command_idx = max(selected_command_idx - 1, 0)
                         selected_command = computer.state.program_data[selected_command_idx].repr(
@@ -317,7 +322,8 @@ while True:
     if auto_running and computer.state.running and not edit_mode:
         auto_cooldown -= 1
         if auto_cooldown <= 0:
-            computer.step()
+            for _ in range(10):
+                computer.step()
             auto_cooldown += auto_max_cooldown
 
     screen.fill(0x16161e)
