@@ -1,12 +1,14 @@
+from ctypes import c_int16
 from dataclasses import dataclass
 from typing import Sequence
+
 import numpy as np
-from ctypes import c_int16
+
 
 @dataclass(init=False)
 class Command:
     name: str
-    arg: int
+    arg: int | None
 
     def __init__(self, init_string: str):
         if init_string == "":
@@ -23,10 +25,14 @@ class Command:
         else:
             self.arg = None
 
+    def is_input(self):
+        return (self.name == "LA" or self.name == "LB") and self.arg // 32
+
     def repr(self):
         if self.arg is not None:
             return f"{self.name} {self.arg}"
         return self.name
+
 
 @dataclass
 class State:
@@ -40,33 +46,51 @@ class State:
     loaded_bank: Sequence[np.int16] = np.zeros(16, np.int16)
     loaded_bank_index: int = 0
     running: bool = True
-    
+    inputs: Sequence[np.int16] = np.zeros(8, np.int16)
+
     @property
     def a(self) -> int:
         return self._a.value
+
     @a.setter
     def a(self, value: int):
         self._a.value = value
+
     @property
     def b(self) -> int:
         return self._b.value
+
     @b.setter
     def b(self, value: int):
         self._b.value = value
+
+
+NON_COMMAND = Command("NON")
+
 
 class Computer:
     def __init__(self, program_data: str):
         program = [Command(line) for line in program_data.split("\n")]
         self.state = State(program)
         self.output: Sequence[tuple[int, int]] = []
-    
+
     def step(self):
         command = self.state.program_data[self.state.instruction_pointer]
         self.state.instruction_pointer += 1
         self.execute(command)
         self.state.clock_cycle += 1
+        if self.state.instruction_pointer >= len(self.state.program_data):
+            self.state.running = False
+            return NON_COMMAND
+        return self.state.program_data[self.state.instruction_pointer]
 
     def execute(self, command: Command):
+        if command.is_input():
+            if command.name == "LA":
+                self.state.a = self.state.inputs[command.arg % 32]
+            else:
+                self.state.b = self.state.inputs[command.arg % 32]
+            return
         match command.name:
             case "LA":
                 self.state.a = self.state.cache_slots[command.arg]
@@ -79,15 +103,15 @@ class Computer:
             case "LBL":
                 self.state.b = command.arg & 255
             case "LBH":
-                self.state.b = self.state.a | (command.arg << 8)
-                
+                self.state.b = self.state.b | (command.arg << 8)
+
             case "SVA":
                 if command.arg >> 5:
                     print(self.state.a)
                     self.output.append((command.arg % 32, self.state.a))
                 else:
                     self.state.cache_slots[command.arg] = self.state.a
-            
+
             case "STP":
                 self.state.running = False
 
@@ -116,8 +140,9 @@ class Computer:
             case "RC":
                 bank = (self.state.b // 16) % 64
                 if bank != self.state.loaded_bank_index:
-                    self.state.ram[self.state.loaded_bank_index*16:(self.state.loaded_bank_index+1)*16] = self.state.loaded_bank
-                    self.state.loaded_bank = self.state.ram[bank*16:(bank+1)*16]
+                    self.state.ram[
+                    self.state.loaded_bank_index * 16:(self.state.loaded_bank_index + 1) * 16] = self.state.loaded_bank
+                    self.state.loaded_bank = self.state.ram[bank * 16:(bank + 1) * 16]
                     self.state.loaded_bank_index = bank
 
             case "JMP":
@@ -140,6 +165,3 @@ class Computer:
             case "JLE":
                 if self.state.a <= self.state.b:
                     self.state.instruction_pointer = command.arg
-            
-            
-

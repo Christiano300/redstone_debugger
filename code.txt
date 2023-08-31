@@ -2,6 +2,7 @@ LAL 1
 ADD
 SVA 0
 LB 0
+LA 33
 RC
 RW
 JMP 0

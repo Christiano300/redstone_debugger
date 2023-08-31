@@ -17,7 +17,10 @@
         "unknown": "0xff7676"
     },
     "commands": {
-        "NON": {"type": "stop", "arg": "none"},
+        "NON": {
+            "type": "none",
+            "arg": "none"
+        },
         "LA": {"type": "load", "arg": "cacheslot"},
         "LB": {"type": "load", "arg": "cacheslot"},
         "LAL": {"type": "load", "arg": "number"},
