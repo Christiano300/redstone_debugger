@@ -1,5 +1,5 @@
 from ctypes import c_int16
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Sequence
 
 import numpy as np
@@ -41,12 +41,12 @@ class State:
     clock_cycle: int = 0
     _a = c_int16(0)
     _b = c_int16(0)
-    cache_slots: Sequence[np.int16] = np.zeros(32, np.int16)
-    ram: Sequence[np.int16] = np.zeros(1024, np.int16)
-    loaded_bank: Sequence[np.int16] = np.zeros(16, np.int16)
+    cache_slots: Sequence[np.int16] = field(default_factory=lambda: np.zeros(32, np.int16))
+    ram: Sequence[np.int16] = field(default_factory=lambda: np.zeros(1024, np.int16))
+    loaded_bank: Sequence[np.int16] = field(default_factory=lambda: np.zeros(16, np.int16))
     loaded_bank_index: int = 0
     running: bool = True
-    inputs: Sequence[np.int16] = np.zeros(8, np.int16)
+    inputs: Sequence[np.int16] = field(default_factory=lambda: np.zeros(8, np.int16))
 
     @property
     def a(self) -> int:
