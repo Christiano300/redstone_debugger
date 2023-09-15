@@ -17,10 +17,7 @@
         "unknown": "0xff7676"
     },
     "commands": {
-        "NON": {
-            "type": "none",
-            "arg": "none"
-        },
+        "NON": {"type": "none", "arg": "none"},
         "LA": {"type": "load", "arg": "cacheslot"},
         "LB": {"type": "load", "arg": "cacheslot"},
         "LAL": {"type": "load", "arg": "number"},
@@ -39,6 +36,7 @@
         "SUP": {"type": "longop", "arg": "none"},
         "SDN": {"type": "longop", "arg": "none"},
         "MUL": {"type": "longop", "arg": "none"},
+        "INB": {"type": "longop", "arg": "none"},
 
         "RW": {"type": "ramop", "arg": "none"},
         "RR": {"type": "ramop", "arg": "none"},

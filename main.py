@@ -37,8 +37,8 @@ with open("code.txt") as f:
     computer = Computer(f.read())
 
 auto_running = False
-STEPS_PER_SECOND = 60
-COMMANDS_PER_STEP = 2
+STEPS_PER_SECOND = 20
+COMMANDS_PER_STEP = 1
 auto_max_cooldown = FPS / STEPS_PER_SECOND
 auto_cooldown = auto_max_cooldown
 

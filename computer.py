@@ -132,6 +132,8 @@ class Computer:
                 self.state.a >>= 1
             case "MUL":
                 self.state.a *= self.state.b
+            case "INB":
+                self.state.b += 1
 
             case "RW":
                 self.state.loaded_bank[self.state.b % 16] = self.state.a
