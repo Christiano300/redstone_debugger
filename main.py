@@ -17,8 +17,10 @@ font_code = pygame.font.SysFont("Consolas", 20)
 font_code_bold = pygame.font.SysFont("Consolas", 20, True)
 
 font_line = pygame.font.SysFont("Consolas", 18)
-icon = pygame.image.load("redstone.png").convert_alpha()
+icon = pygame.image.load("./images/redstone.png").convert_alpha()
 pygame.display.set_icon(icon)
+
+lamp_images = [pygame.image.load(f"./images/{i}.png").convert_alpha() for i in ("off", "turning_off", "turning_on", "on")]
 
 edit_mode = False
 selected_command_idx: int = 0
@@ -37,7 +39,7 @@ with open("code.txt") as f:
     computer = Computer(f.read())
 
 auto_running = False
-STEPS_PER_SECOND = 20
+STEPS_PER_SECOND = 60
 COMMANDS_PER_STEP = 1
 auto_max_cooldown = FPS / STEPS_PER_SECOND
 auto_cooldown = auto_max_cooldown
@@ -259,6 +261,15 @@ def draw_input():
                       linenumpad, row_height * 8 + pad),
                      2, 2)
 
+def draw_screen():
+    hofs = 670
+    vofs = 310
+    
+    for x in range(64):
+        for y in range(64):
+            screen_x = hofs + x * 6
+            screen_y = vofs + y * 6
+            screen.blit(lamp_images[computer.screen[x][y] + computer.screenbuffer[x][y] * 2], (screen_x, screen_y))
 
 while True:
     for event in pygame.event.get():
@@ -279,7 +290,7 @@ while True:
             if edit_mode:
                 if event.key == pygame.K_DOWN:
                     if pygame.key.get_mods() & pygame.KMOD_ALT and selected_command_idx < len(
-                            computer.state.program_data) - 1:
+                        computer.state.program_data) - 1:
                         computer.state.program_data[selected_command_idx], computer.state.program_data[
                             selected_command_idx +
                             1] = computer.state.program_data[selected_command_idx + 1], computer.state.program_data[
@@ -452,6 +463,7 @@ while True:
     draw_output()
     draw_ram()
     draw_input()
+    draw_screen()
 
     pygame.display.update()
     clock.tick(FPS)

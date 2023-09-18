@@ -73,6 +73,8 @@ class Computer:
         program = [Command(line) for line in program_data.split("\n")]
         self.state = State(program)
         self.output: Sequence[tuple[int, int]] = []
+        self.screen: Sequence[Sequence[int]] = np.zeros((64, 64), bool)
+        self.screenbuffer: Sequence[Sequence[int]] = np.zeros((64, 64), bool)
 
     def step(self):
         command = self.state.program_data[self.state.instruction_pointer]
@@ -106,9 +108,25 @@ class Computer:
                 self.state.b = self.state.b | (command.arg << 8)
 
             case "SVA":
-                if command.arg >> 5:
+                if command.arg // 32:
                     print(self.state.a)
-                    self.output.append((command.arg % 32, self.state.a))
+                    register = command.arg % 32
+                    value = self.state.a
+                    self.output.append((register, value))
+                    if register == 6:
+                        x, y = self.find_last_screen_position()
+                        match value:
+                            case 1:
+                                self.screen[:] = self.screenbuffer[:]
+                            case 2:
+                                self.screenbuffer = np.zeros((64, 64), bool)
+                            case 4:
+                                self.screenbuffer[x][y] = True
+                            case 8:
+                                self.screenbuffer[x][y] = not self.screenbuffer[x][y]
+                            case 16:
+                                self.screenbuffer[x][y] = False
+
                 else:
                     self.state.cache_slots[command.arg] = self.state.a
 
@@ -167,3 +185,10 @@ class Computer:
             case "JLE":
                 if self.state.a <= self.state.b:
                     self.state.instruction_pointer = command.arg
+    
+    def find_last_screen_position(self):
+        for i in range(len(self.output) - 1, -1, -1):
+            if self.output[i][0] == 7:
+                value = self.output[i][1]
+                return (value & 0x3f, value >> 8 & 0x3f)
+        raise Exception("No screen position found")
