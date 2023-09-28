@@ -265,10 +265,12 @@ def draw_screen():
     hofs = 670
     vofs = 310
     
-    for x in range(64):
-        for y in range(64):
-            screen_x = hofs + x * 6
-            screen_y = vofs + y * 6
+    for i in range(64):
+        x = 63 - i
+        for j in range(64):
+            y = 63 - j
+            screen_x = hofs + i * 6
+            screen_y = vofs + j * 6
             screen.blit(lamp_images[computer.screen[x][y] + computer.screenbuffer[x][y] * 2], (screen_x, screen_y))
 
 while True:

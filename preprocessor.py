@@ -11,7 +11,7 @@ screen_ops = {
     "off": "16",
 }
 
-def do_stuff(part: str):
+def decode_part(part: str):
     if part.startswith("$"):
         return vars.setdefault(part, len(vars))
 
@@ -29,8 +29,9 @@ with open("code.skript") as f:
 vars: dict[str, int] = {}
 
 for idx, line in enumerate(code):
+    
     parts = line.split()
-    parts = [do_stuff(part) for part in parts]
+    parts = [decode_part(part) for part in parts]
     code[idx] = " ".join(str(i) for i in parts)
 
 with open("code.txt", "w") as f_out:
