@@ -145,9 +145,9 @@ class Computer:
                 self.state.a ^= self.state.b
 
             case "SUP":
-                self.state.a <<= 1
+                self.state.a <<= command.arg
             case "SDN":
-                self.state.a >>= 1
+                self.state.a >>= command.arg
             case "MUL":
                 self.state.a *= self.state.b
             case "INB":
