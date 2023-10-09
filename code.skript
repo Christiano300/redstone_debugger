@@ -1,33 +1,6 @@
-LAL 0
-SVA $start
-SVA $end
-LAL 32
-LAH 0
-RW
-#mainloop
-LB $end
 LAL 1
-ADD
-SVA $end
-RC
-RR
-LB 32
-ADD
-LB $end
-RC
-RW
-SVA @screenpos
-LAL !on
-SVA @screenop
-LB $start
-RC
-RR
-SVA @screenpos
-LAL !off
-SVA @screenop
-LAL 1
-ADD
-SVA $start
-LAL !refresh
-SVA @screenop
-JMP 7
+LAH 1
+SVA $1
+LAL 10
+LAH 20
+SVA $2

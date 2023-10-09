@@ -1,6 +1,7 @@
 from ctypes import c_int16
 from dataclasses import dataclass, field
 from typing import Sequence
+from random import randint
 
 import numpy as np
 
@@ -87,6 +88,8 @@ class Computer:
         return self.state.program_data[self.state.instruction_pointer]
 
     def execute(self, command: Command):
+        if command.arg == 39:
+            self.state.inputs[7] = randint(-32768, 32767)
         if command.is_input():
             if command.name == "LA":
                 self.state.a = self.state.inputs[command.arg % 32]
