@@ -94,26 +94,30 @@ def draw_program():
     pad = 2
     linenumpad = font_code_bold.size("63")[0] + 6
 
-    draw_text("Program:", (hofs, vofs - row_height), 0xffffffff, True)
-
     for i in range(64):
         draw_text(str(i), (hofs + pad * 2 + i // 32 * (col_width + linenumpad + pad),
                            vofs + pad + i % 32 * row_height),
                   0x707070ff, font=font_line)
+        
+    position = selected_command_idx if edit_mode else computer.state.instruction_pointer
+    start = position // 64 * 64
 
-    for i, command in enumerate(computer.state.program_data):
+    draw_text("Program: ", (hofs, vofs - row_height), 0xffffffff, True)
+    draw_text(f"(Page {position // 64})", (hofs + font_code_bold.size("Program: ")[0], vofs - row_height), 0x9f9f9fff)
+    
+    for i, command in enumerate(computer.state.program_data[start:start + 64]):
         text_x = hofs + pad * 2 + linenumpad + \
                  i // 32 * (col_width + linenumpad + pad)
         text_y = vofs + pad + i % 32 * row_height
         if edit_mode:
-            if i == selected_command_idx:
+            if i + start == selected_command_idx:
                 draw_selection(col_width, pad, row_height, text_x, text_y)
                 cursor_ofs = font_code.size(selected_command)[0]
                 pygame.draw.line(screen, 0xf0f0f0,
                                  (text_x + cursor_ofs, text_y + 2),
                                  (text_x + cursor_ofs, text_y + row_height - 2), 2)
         else:
-            if computer.state.running and i == computer.state.instruction_pointer:
+            if computer.state.running and i + start == computer.state.instruction_pointer:
                 pygame.draw.rect(screen, 0x404040,
                                  (text_x, text_y, col_width - pad, row_height))
 
@@ -167,14 +171,15 @@ def draw_cache():
 def draw_info():
     line_height = font_code_bold.size("A: ")[1]
     hofs = 290
-    vofs = 10 + line_height * 18
+    vofs = line_height * 18
 
     draw_value(computer.state.a, "A: ", (hofs, vofs))
     draw_value(computer.state.b, "B: ", (hofs, vofs + line_height))
+    draw_value(computer.state.c, "C: ", (hofs, vofs + line_height * 2))
     draw_value(computer.state.clock_cycle, "Clock Cycle: ",
-               (hofs, vofs + line_height * 2))
+               (hofs, vofs + line_height * 3))
     draw_value(computer.state.instruction_pointer,
-               "Instruction: ", (hofs, vofs + line_height * 3))
+               "Instruction: ", (hofs, vofs + line_height * 4))
 
 
 def draw_output():
@@ -313,9 +318,14 @@ while True:
                         selected_command_idx = max(selected_command_idx - 1, 0)
                         selected_command = computer.state.program_data[selected_command_idx].repr()
 
-                elif event.key in (pygame.K_LEFT, pygame.K_RIGHT):
-                    if (selected_command_idx + 32) % 64 < len(computer.state.program_data):
-                        selected_command_idx = (selected_command_idx + 32) % 64
+                elif event.key == pygame.K_RIGHT:
+                    if selected_command_idx + 32 < len(computer.state.program_data):
+                        selected_command_idx = selected_command_idx + 32
+                        selected_command = computer.state.program_data[selected_command_idx].repr() 
+
+                elif event.key == pygame.K_LEFT:
+                    if selected_command_idx - 32 >= 0:
+                        selected_command_idx = selected_command_idx - 32
                         selected_command = computer.state.program_data[selected_command_idx].repr()
 
                 elif event.key == pygame.K_BACKSPACE:
@@ -366,6 +376,8 @@ while True:
 
                 elif event.key == pygame.K_DELETE:
                     del computer.state.program_data[selected_command_idx]
+                    if computer.state.instruction_pointer > selected_command_idx or len(computer.state.program_data) == computer.state.instruction_pointer:
+                        computer.state.instruction_pointer -= 1
                     if len(computer.state.program_data) == 0:
                         computer.state.program_data.append(Command(""))
                     elif selected_command_idx == len(computer.state.program_data):

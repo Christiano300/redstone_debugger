@@ -42,6 +42,7 @@ class State:
     clock_cycle: int = 0
     _a = c_int16(0)
     _b = c_int16(0)
+    _c = c_int16(0)
     cache_slots: Sequence[np.int16] = field(default_factory=lambda: np.zeros(32, np.int16))
     ram: Sequence[np.int16] = field(default_factory=lambda: np.zeros(1024, np.int16))
     loaded_bank: Sequence[np.int16] = field(default_factory=lambda: np.zeros(16, np.int16))
@@ -64,6 +65,14 @@ class State:
     @b.setter
     def b(self, value: int):
         self._b.value = value
+        
+    @property
+    def c(self) -> int:
+        return self._c.value
+    
+    @c.setter
+    def c(self, value: int):
+        self._c.value = value
 
 
 NON_COMMAND = Command("NON")
@@ -109,6 +118,9 @@ class Computer:
                 self.state.b = command.arg & 255
             case "LBH":
                 self.state.b = self.state.b | (command.arg << 8)
+                
+            case "LCL":
+                self.state.c = command.arg & 255
 
             case "SVA":
                 if command.arg // 32:

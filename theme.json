@@ -24,6 +24,7 @@
         "LAH": {"type": "load", "arg": "number"},
         "LBL": {"type": "load", "arg": "number"},
         "LBH": {"type": "load", "arg": "number"},
+        "LCL": {"type": "load", "arg": "number"},
         "SVA": {"type": "save", "arg": "cacheslot"},
         
         "STP": {"type": "stop", "arg": "none"},
